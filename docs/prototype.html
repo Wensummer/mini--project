@@ -1,0 +1,307 @@
+<style>
+  :root {
+    --bg: #eef1ee; --surface: #ffffff; --surface-2: #f6f8f5; --line: #dde3dd;
+    --ink: #16201c; --muted: #64726b; --faint: #93a099;
+    --brand: #0f6f5c; --brand-ink: #0b5648;
+    --t-legal: #b23a2b;      /* 法定强制 */
+    --t-stat: #b0781a;       /* 统计异常 */
+    --t-norm: #2f6688;       /* 规范性 */
+    --t-intel: #6a5aa0;      /* 情报线索 */
+    --t-topic: #0f6f5c;      /* 专题 */
+    --shadow: 0 1px 2px rgba(20,40,34,.06), 0 8px 24px rgba(20,40,34,.06);
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    --cn: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0c1310; --surface: #131c18; --surface-2: #0f1713; --line: #22302a;
+      --ink: #e4ebe6; --muted: #93a49b; --faint: #64766d;
+      --brand: #4bbfa4; --brand-ink: #7ad3bd;
+      --t-legal: #e0715f; --t-stat: #d8a24a; --t-norm: #6aa6cc; --t-intel: #a495d8; --t-topic: #4bbfa4;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #eef1ee; --surface: #ffffff; --surface-2: #f6f8f5; --line: #dde3dd;
+    --ink: #16201c; --muted: #64726b; --faint: #93a099;
+    --brand: #0f6f5c; --brand-ink: #0b5648;
+    --t-legal: #b23a2b; --t-stat: #b0781a; --t-norm: #2f6688; --t-intel: #6a5aa0; --t-topic: #0f6f5c;
+    --shadow: 0 1px 2px rgba(20,40,34,.06), 0 8px 24px rgba(20,40,34,.06);
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c1310; --surface: #131c18; --surface-2: #0f1713; --line: #22302a;
+    --ink: #e4ebe6; --muted: #93a49b; --faint: #64766d;
+    --brand: #4bbfa4; --brand-ink: #7ad3bd;
+    --t-legal: #e0715f; --t-stat: #d8a24a; --t-norm: #6aa6cc; --t-intel: #a495d8; --t-topic: #4bbfa4;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--cn);
+    font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .num { font-variant-numeric: tabular-nums; }
+  .mono { font-family: var(--mono); }
+  h1,h2,h3 { text-wrap: balance; margin: 0; }
+  .app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+
+  /* ---------- rail ---------- */
+  .rail { background: var(--surface); border-right: 1px solid var(--line);
+    display: flex; flex-direction: column; padding: 18px 14px; gap: 18px; position: sticky; top: 0; height: 100vh; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .seal { width: 34px; height: 34px; border-radius: 9px; background: var(--brand);
+    color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 17px; }
+  .brand strong { display: block; font-size: 15px; letter-spacing: .5px; }
+  .brand span { font-size: 11px; color: var(--muted); }
+  .nav { display: flex; flex-direction: column; gap: 2px; }
+  .nav .grp { font-size: 10.5px; letter-spacing: 1.5px; color: var(--faint); text-transform: uppercase;
+    padding: 12px 8px 4px; }
+  .nav button { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+    padding: 8px 9px; border: 0; border-radius: 8px; background: transparent; color: var(--ink);
+    font-family: inherit; font-size: 13.5px; cursor: pointer; }
+  .nav button:hover { background: var(--surface-2); }
+  .nav button.on { background: color-mix(in srgb, var(--brand) 13%, transparent); color: var(--brand-ink); font-weight: 600; }
+  .nav button .g { width: 20px; height: 20px; border-radius: 6px; background: var(--surface-2);
+    display: grid; place-items: center; font-size: 12px; color: var(--muted); }
+  .nav button.on .g { background: var(--brand); color: #fff; }
+  .nav button em { margin-left: auto; font-style: normal; font-size: 11px; background: var(--t-legal);
+    color: #fff; border-radius: 20px; padding: 1px 7px; }
+  .proof { margin-top: auto; border: 1px solid var(--line); border-radius: 10px; padding: 11px;
+    display: flex; gap: 9px; align-items: flex-start; background: var(--surface-2); }
+  .proof .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); margin-top: 4px;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 20%, transparent); }
+  .proof strong { font-size: 12.5px; } .proof small { color: var(--muted); font-size: 11px; }
+
+  /* ---------- stage ---------- */
+  .stage { display: flex; flex-direction: column; min-width: 0; }
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--line); padding: 14px 26px;
+    display: flex; flex-direction: column; gap: 12px; position: sticky; top: 0; z-index: 5; }
+  .crumb { display: flex; align-items: center; gap: 8px; font-size: 12.5px; flex-wrap: wrap; }
+  .crumb .step { display: flex; align-items: center; gap: 7px; color: var(--muted); }
+  .crumb .step b { color: var(--ink); font-weight: 600; }
+  .crumb .step .lv { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); }
+  .crumb .arrow { color: var(--faint); }
+  .crumb .step.here b { color: var(--brand-ink); }
+  .kpis { display: flex; gap: 10px; flex-wrap: wrap; }
+  .kpi { border: 1px solid var(--line); border-radius: 9px; padding: 7px 12px; background: var(--surface-2);
+    display: flex; flex-direction: column; gap: 1px; min-width: 120px; }
+  .kpi .k { font-size: 11px; color: var(--muted); }
+  .kpi .v { font-size: 17px; font-weight: 700; } .kpi .v small { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+  .board { padding: 20px 26px 40px; display: flex; flex-direction: column; gap: 16px; }
+  .phead { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .phead .idcard { flex: 1; min-width: 260px; }
+  .phead h1 { font-size: 22px; letter-spacing: .3px; }
+  .phead .sub { color: var(--muted); font-size: 12.5px; margin-top: 4px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .phead .sub b { color: var(--ink); font-weight: 600; }
+  .riskscore { border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; background: var(--surface);
+    box-shadow: var(--shadow); text-align: right; }
+  .riskscore .n { font-size: 30px; font-weight: 800; color: var(--t-legal); line-height: 1; }
+  .riskscore .l { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  .grid { display: grid; grid-template-columns: 300px 1fr 260px; gap: 16px; align-items: start; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; box-shadow: var(--shadow); }
+  .card > .hd { padding: 12px 15px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+  .card > .hd h3 { font-size: 13.5px; letter-spacing: .3px; }
+  .card > .hd .meta { font-size: 11px; color: var(--muted); }
+  .card > .bd { padding: 13px 15px; }
+
+  /* tag list */
+  .taglist { display: flex; flex-direction: column; gap: 7px; }
+  .tagrow { border: 1px solid var(--line); border-radius: 10px; padding: 10px 11px; cursor: pointer;
+    display: flex; flex-direction: column; gap: 5px; background: var(--surface); position: relative; }
+  .tagrow::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--tc, var(--muted)); }
+  .tagrow:hover { border-color: color-mix(in srgb, var(--tc) 45%, var(--line)); }
+  .tagrow.on { border-color: var(--tc); background: color-mix(in srgb, var(--tc) 7%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tc) 30%, transparent); }
+  .tagrow .r1 { display: flex; align-items: center; gap: 7px; padding-left: 8px; }
+  .tagrow .r1 b { font-size: 13px; }
+  .tagrow .mount { font-size: 10.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; margin-left: auto; }
+  .tagrow .r2 { padding-left: 8px; display: flex; gap: 8px; align-items: center; font-size: 11px; color: var(--muted); }
+  .ttype { font-size: 10.5px; font-weight: 700; letter-spacing: .3px; color: var(--tc); }
+  .legal { --tc: var(--t-legal); } .stat { --tc: var(--t-stat); } .norm { --tc: var(--t-norm); } .intel { --tc: var(--t-intel); } .topic { --tc: var(--t-topic); }
+
+  /* evidence dossier — the hero */
+  .dossier .bd { display: flex; flex-direction: column; gap: 0; }
+  .chain { display: flex; flex-direction: column; }
+  .chain .node { display: grid; grid-template-columns: 26px 1fr; gap: 12px; padding: 2px 0; }
+  .chain .rail-i { display: flex; flex-direction: column; align-items: center; }
+  .chain .rail-i .d { width: 13px; height: 13px; border-radius: 50%; border: 2.5px solid var(--t-legal); background: var(--surface); margin-top: 4px; }
+  .chain .rail-i .ln { flex: 1; width: 2px; background: color-mix(in srgb, var(--t-legal) 40%, var(--line)); margin: 2px 0; min-height: 14px; }
+  .chain .node:last-child .ln { display: none; }
+  .chain .lab { font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); }
+  .chain .body { padding-bottom: 14px; }
+  .chain .law { font-weight: 700; color: var(--t-legal); font-size: 14px; }
+  .chain .quote { border-left: 3px solid color-mix(in srgb, var(--t-legal) 40%, var(--line)); padding: 3px 0 3px 11px;
+    color: var(--ink); margin: 6px 0; font-size: 13px; background: color-mix(in srgb, var(--t-legal) 5%, transparent); }
+  .snap { background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px; margin-top: 2px; }
+  .snap .row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; font-size: 12.5px; }
+  .snap .row + .row { border-top: 1px dashed var(--line); }
+  .snap .row .kk { color: var(--muted); } .snap .row .vv { font-weight: 600; }
+  .verdict { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 700; }
+  .verdict .hit { background: var(--t-legal); color: #fff; border-radius: 6px; padding: 2px 9px; font-size: 12px; }
+  .nogen { margin-top: 13px; border-top: 1px solid var(--line); padding-top: 11px; display: flex; gap: 9px; align-items: flex-start;
+    font-size: 12px; color: var(--muted); }
+  .nogen .badge { color: var(--brand-ink); font-weight: 700; white-space: nowrap; }
+
+  /* right column */
+  .pengraph { padding: 6px 4px 2px; }
+  .disp .line { display: flex; justify-content: space-between; font-size: 12.5px; padding: 6px 0; }
+  .disp .line + .line { border-top: 1px solid var(--line); }
+  .disp .line .vv { font-weight: 600; }
+  .pill { font-size: 11px; font-weight: 600; border-radius: 20px; padding: 2px 9px; display: inline-block; }
+  .pill.review { background: color-mix(in srgb, var(--t-stat) 16%, transparent); color: var(--t-stat); }
+  .note { font-size: 11.5px; color: var(--muted); margin-top: 10px; border: 1px dashed var(--line); border-radius: 8px; padding: 9px; line-height: 1.5; }
+  .themed-topic { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--t-topic); font-weight: 600;
+    border: 1px solid color-mix(in srgb, var(--t-topic) 35%, var(--line)); border-radius: 20px; padding: 3px 10px; }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); padding: 2px 2px 0; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+  .disclaimer { text-align: center; font-size: 11px; color: var(--faint); padding: 6px; }
+  @media (max-width: 1080px) { .grid { grid-template-columns: 1fr; } .rail { display: none; } .app { grid-template-columns: 1fr; } }
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand"><div class="seal">鉴</div><div><strong>登记智鉴</strong><span>合规风险监测中枢</span></div></div>
+    <nav class="nav">
+      <span class="grp">目标 1 · 法规流程</span>
+      <button><span class="g">法</span>法规与两级流程</button>
+      <span class="grp">目标 2 · 标签与三级分析</span>
+      <button><span class="g">势</span>宏观态势</button>
+      <button><span class="g">专</span>专题监测 <em>2</em></button>
+      <button><span class="g">群</span>关联集群</button>
+      <button class="on"><span class="g">证</span>企业画像 · 证据链</button>
+      <button><span class="g">办</span>预警处置 <em>31</em></button>
+      <button><span class="g">规</span>规则治理</button>
+      <span class="grp">目标 3 · 智能助手</span>
+      <button><span class="g">智</span>问答 · 问数 · 报告</button>
+    </nav>
+    <div class="proof"><span class="dot"></span><div><strong>证据完整性 100%</strong><small>227 / 227 条标签均已挂证据 · 待核法条 0</small></div></div>
+  </aside>
+
+  <div class="stage">
+    <header class="topbar">
+      <div class="crumb">
+        <span class="step"><span class="lv">宏观</span><b>7月新设突增 67 户</b></span>
+        <span class="arrow">›</span>
+        <span class="step"><span class="lv">中观</span><b>洪武路121号 · 聚集集群 50 户</b></span>
+        <span class="arrow">›</span>
+        <span class="step here"><span class="lv">微观</span><b>南京彩链数字科技有限公司</b></span>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><span class="k">全省风险命中率</span><span class="v num">3.1<small>%</small></span></div>
+        <div class="kpi"><span class="k">直播专题·许可缺失率</span><span class="v num">35.7<small>%</small></span></div>
+        <div class="kpi"><span class="k">高风险关联集群</span><span class="v num">29<small> 个</small></span></div>
+        <div class="kpi"><span class="k">今日待复核工单</span><span class="v num">31<small> 条</small></span></div>
+      </div>
+    </header>
+
+    <div class="board">
+      <div class="phead">
+        <div class="idcard">
+          <h1>南京彩链数字科技有限公司</h1>
+          <div class="sub">
+            <span class="mono">91320111000006 50XX</span>
+            <span>状态 <b>存续</b></span>
+            <span>注册资本 <b class="num">300</b> 万</span>
+            <span>成立 <b class="num">2023-07-29</b></span>
+            <span>登记机关 <b>南京市浦口区</b></span>
+          </div>
+          <div style="margin-top:9px"><span class="themed-topic">◆ 直播电商专题成员</span></div>
+        </div>
+        <div class="riskscore"><div class="n num">4</div><div class="l">命中风险标签（跨 3 个挂载对象）</div></div>
+      </div>
+
+      <div class="grid">
+        <!-- 风险标签 -->
+        <div class="card">
+          <div class="hd"><h3>风险标签</h3><span class="meta">自身 1 · 关联 3</span></div>
+          <div class="bd">
+            <div class="taglist">
+              <div class="tagrow legal on">
+                <div class="r1"><span class="ttype">法定强制</span><b>许可项无批准文件</b><span class="mount">自身</span></div>
+                <div class="r2"><span class="mono">R-JY-01</span> · 《条例》第14条 · 置信度 1.0</div>
+              </div>
+              <div class="tagrow legal">
+                <div class="r1"><span class="ttype">法定强制</span><b>失信人员违规任职</b><span class="mount">法代</span></div>
+                <div class="r2"><span class="mono">R-SM-06</span> · 公司法178条 · 关联自然人</div>
+              </div>
+              <div class="tagrow stat">
+                <div class="r1"><span class="ttype">统计异常</span><b>住所批量聚集</b><span class="mount">住所</span></div>
+                <div class="r2"><span class="mono">R-ZS-02</span> · 无法源（统计类）· 关联地址</div>
+              </div>
+              <div class="tagrow topic">
+                <div class="r1"><span class="ttype">专题</span><b>直播电商专题</b><span class="mount">企业</span></div>
+                <div class="r2"><span class="mono">R-JY-07</span> · 范围标记，非风险</div>
+              </div>
+            </div>
+            <div class="legend" style="margin-top:13px">
+              <span><i style="background:var(--t-legal)"></i>法定强制</span>
+              <span><i style="background:var(--t-stat)"></i>统计异常</span>
+              <span><i style="background:var(--t-norm)"></i>规范性</span>
+              <span><i style="background:var(--t-intel)"></i>情报线索</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 证据链 dossier -->
+        <div class="card dossier">
+          <div class="hd"><h3>证据链 · 许可项无批准文件</h3><span class="meta">倒着念即解释</span></div>
+          <div class="bd">
+            <div class="chain">
+              <div class="node"><div class="rail-i"><span class="d"></span><span class="ln"></span></div>
+                <div class="body"><div class="lab">法条要求</div>
+                  <div class="law">《市场主体登记管理条例》第14条</div>
+                  <div class="quote">登记前依法须经批准的许可经营项目，应当在申请登记时提交批准文件。</div></div></div>
+              <div class="node"><div class="rail-i"><span class="d"></span><span class="ln"></span></div>
+                <div class="body"><div class="lab">字段值快照（命中当时）</div>
+                  <div class="snap">
+                    <div class="row"><span class="kk">许可经营项目</span><span class="vv">食品销售</span></div>
+                    <div class="row"><span class="kk">批准文件编号</span><span class="vv" style="color:var(--t-legal)">空</span></div>
+                    <div class="row"><span class="kk">经营范围来源</span><span class="vv">直播带货涉食品</span></div>
+                  </div></div></div>
+              <div class="node"><div class="rail-i"><span class="d"></span></div>
+                <div class="body"><div class="lab">判定</div>
+                  <div class="verdict"><span class="hit">命中</span>属许可经营项目但未提交批准文件</div></div></div>
+            </div>
+            <div class="nogen"><span class="badge">解释即证据</span>
+              以上三段由 <b>标签 → 证据 → 规则</b> 倒序拼接而成，法条原文、字段快照、判定逐层可溯，<b>无一字由大模型生成</b>。大模型只在智能助手侧做排版，不参与任何判定。</div>
+          </div>
+        </div>
+
+        <!-- 右列：穿透 + 处置 -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <div class="hd"><h3>股权穿透</h3><span class="meta">图算法派生</span></div>
+            <div class="bd">
+              <svg class="pengraph" viewBox="0 0 220 132" width="100%" height="120" role="img" aria-label="股权穿透路径">
+                <defs><marker id="ar" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="var(--muted)"></path></marker></defs>
+                <line x1="110" y1="34" x2="110" y2="74" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar)"></line>
+                <g text-anchor="middle" font-family="var(--cn)">
+                  <circle cx="110" cy="22" r="16" fill="color-mix(in srgb,var(--t-intel) 18%,transparent)" stroke="var(--t-intel)" stroke-width="1.5"></circle>
+                  <text x="110" y="26" font-size="10" fill="var(--ink)">自然人</text>
+                  <rect x="78" y="80" width="64" height="30" rx="7" fill="color-mix(in srgb,var(--brand) 14%,transparent)" stroke="var(--brand)" stroke-width="1.5"></rect>
+                  <text x="110" y="99" font-size="9.5" fill="var(--ink)">彩链数字科技</text>
+                  <text x="150" y="58" font-size="10" fill="var(--t-legal)" font-weight="700">100%</text>
+                </g>
+              </svg>
+              <div class="note">受益所有人穿透算出，深度 1 层。760/1000 家依法免于备案 → 监管核查靠穿透，非申报字段。</div>
+            </div>
+          </div>
+          <div class="card disp">
+            <div class="hd"><h3>处置</h3></div>
+            <div class="bd">
+              <div class="line"><span>配置处置级别</span><span class="vv"><span class="pill review">人工复核</span></span></div>
+              <div class="line"><span>实测 precision</span><span class="vv num">复核 &lt;20，未采信</span></div>
+              <div class="line"><span>是否允许阻断</span><span class="vv">否</span></div>
+              <div class="note">冷启动阶段，precision 未经证明的规则<b>结构上不允许阻断企业开办</b>。误报回流为规则调优的标注数据。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="disclaimer">竞赛演示环境 · 微观数据为合成样本，不代表真实企业 · 规则 / 流程 / 法条引用均真实可溯源</div>
+    </div>
+  </div>
+</div>
